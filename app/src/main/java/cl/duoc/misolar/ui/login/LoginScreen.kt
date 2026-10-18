@@ -19,12 +19,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duoc.misolar.ui.componentes.CampoValidado
 import cl.duoc.misolar.ui.theme.MiSolarTheme
@@ -35,6 +37,9 @@ fun LoginScreen(
     onIrARegistro: () -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
+    // La pantalla observa el StateFlow y se recompone cuando cambia el estado
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -63,19 +68,19 @@ fun LoginScreen(
             )
 
             CampoValidado(
-                valor = viewModel.correo,
+                valor = uiState.correo,
                 onCambio = { viewModel.cambiarCorreo(it) },
                 etiqueta = "Correo",
                 icono = Icons.Filled.Email,
-                error = viewModel.errorCorreo,
+                error = uiState.errorCorreo,
                 tipoTeclado = KeyboardType.Email
             )
             CampoValidado(
-                valor = viewModel.password,
+                valor = uiState.password,
                 onCambio = { viewModel.cambiarPassword(it) },
                 etiqueta = "Contraseña",
                 icono = Icons.Filled.Lock,
-                error = viewModel.errorPassword,
+                error = uiState.errorPassword,
                 esPassword = true,
                 tipoTeclado = KeyboardType.Password
             )

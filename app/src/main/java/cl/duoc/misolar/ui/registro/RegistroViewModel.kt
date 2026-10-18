@@ -1,8 +1,5 @@
 package cl.duoc.misolar.ui.registro
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import cl.duoc.misolar.util.validarApellido
 import cl.duoc.misolar.util.validarCorreo
@@ -10,84 +7,94 @@ import cl.duoc.misolar.util.validarNombre
 import cl.duoc.misolar.util.validarPassword
 import cl.duoc.misolar.util.validarRepetirPassword
 import cl.duoc.misolar.util.validarTerminos
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-// Clase 04: el ViewModel mantiene los datos del formulario, sus errores y la accion registrar()
+// Clase 05: UiState + StateFlow. La pantalla lee uiState y llama a estas funciones.
 class RegistroViewModel : ViewModel() {
 
-    var nombre by mutableStateOf("")
-        private set
-    var apellido by mutableStateOf("")
-        private set
-    var correo by mutableStateOf("")
-        private set
-    var password by mutableStateOf("")
-        private set
-    var repetirPassword by mutableStateOf("")
-        private set
-    var aceptaTerminos by mutableStateOf(false)
-        private set
-
-    var errorNombre by mutableStateOf<String?>(null)
-        private set
-    var errorApellido by mutableStateOf<String?>(null)
-        private set
-    var errorCorreo by mutableStateOf<String?>(null)
-        private set
-    var errorPassword by mutableStateOf<String?>(null)
-        private set
-    var errorRepetirPassword by mutableStateOf<String?>(null)
-        private set
-    var errorTerminos by mutableStateOf<String?>(null)
-        private set
+    private val _uiState = MutableStateFlow(RegistroUiState())
+    val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
 
     // En cada cambio, si el campo ya tenia error se valida de nuevo para que el error
     // desaparezca apenas el usuario lo corrige
     fun cambiarNombre(nuevoNombre: String) {
-        nombre = nuevoNombre
-        if (errorNombre != null) errorNombre = validarNombre(nuevoNombre)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                nombre = nuevoNombre,
+                errorNombre = if (estadoActual.errorNombre != null) validarNombre(nuevoNombre) else null
+            )
+        }
     }
 
     fun cambiarApellido(nuevoApellido: String) {
-        apellido = nuevoApellido
-        if (errorApellido != null) errorApellido = validarApellido(nuevoApellido)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                apellido = nuevoApellido,
+                errorApellido = if (estadoActual.errorApellido != null) validarApellido(nuevoApellido) else null
+            )
+        }
     }
 
     fun cambiarCorreo(nuevoCorreo: String) {
-        correo = nuevoCorreo
-        if (errorCorreo != null) errorCorreo = validarCorreo(nuevoCorreo)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                correo = nuevoCorreo,
+                errorCorreo = if (estadoActual.errorCorreo != null) validarCorreo(nuevoCorreo) else null
+            )
+        }
     }
 
     fun cambiarPassword(nuevoPassword: String) {
-        password = nuevoPassword
-        if (errorPassword != null) errorPassword = validarPassword(nuevoPassword)
-        if (errorRepetirPassword != null) {
-            errorRepetirPassword = validarRepetirPassword(nuevoPassword, repetirPassword)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                password = nuevoPassword,
+                errorPassword = if (estadoActual.errorPassword != null) validarPassword(nuevoPassword) else null,
+                errorRepetirPassword = if (estadoActual.errorRepetirPassword != null) {
+                    validarRepetirPassword(nuevoPassword, estadoActual.repetirPassword)
+                } else {
+                    null
+                }
+            )
         }
     }
 
     fun cambiarRepetirPassword(nuevoRepetirPassword: String) {
-        repetirPassword = nuevoRepetirPassword
-        if (errorRepetirPassword != null) {
-            errorRepetirPassword = validarRepetirPassword(password, nuevoRepetirPassword)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                repetirPassword = nuevoRepetirPassword,
+                errorRepetirPassword = if (estadoActual.errorRepetirPassword != null) {
+                    validarRepetirPassword(estadoActual.password, nuevoRepetirPassword)
+                } else {
+                    null
+                }
+            )
         }
     }
 
     fun cambiarTerminos(nuevoTerminos: Boolean) {
-        aceptaTerminos = nuevoTerminos
-        if (errorTerminos != null) errorTerminos = validarTerminos(nuevoTerminos)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                aceptaTerminos = nuevoTerminos,
+                errorTerminos = if (estadoActual.errorTerminos != null) validarTerminos(nuevoTerminos) else null
+            )
+        }
     }
 
-    // Valida todo el formulario. Devuelve true si se puede registrar.
+    // Valida todo el formulario y, si esta correcto, marca el registro como exitoso.
     // En la etapa 4 aqui se guardara el usuario en Room.
-    fun registrar(): Boolean {
-        errorNombre = validarNombre(nombre)
-        errorApellido = validarApellido(apellido)
-        errorCorreo = validarCorreo(correo)
-        errorPassword = validarPassword(password)
-        errorRepetirPassword = validarRepetirPassword(password, repetirPassword)
-        errorTerminos = validarTerminos(aceptaTerminos)
+    fun registrar() {
+        val estado = _uiState.value
+        val errorNombre = validarNombre(estado.nombre)
+        val errorApellido = validarApellido(estado.apellido)
+        val errorCorreo = validarCorreo(estado.correo)
+        val errorPassword = validarPassword(estado.password)
+        val errorRepetirPassword = validarRepetirPassword(estado.password, estado.repetirPassword)
+        val errorTerminos = validarTerminos(estado.aceptaTerminos)
 
-        return listOf(
+        val formularioValido = listOf(
             errorNombre,
             errorApellido,
             errorCorreo,
@@ -95,5 +102,22 @@ class RegistroViewModel : ViewModel() {
             errorRepetirPassword,
             errorTerminos
         ).all { it == null }
+
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                errorNombre = errorNombre,
+                errorApellido = errorApellido,
+                errorCorreo = errorCorreo,
+                errorPassword = errorPassword,
+                errorRepetirPassword = errorRepetirPassword,
+                errorTerminos = errorTerminos,
+                registroExitoso = formularioValido
+            )
+        }
+    }
+
+    // Se llama despues de mostrar el mensaje de exito: limpia el formulario
+    fun reiniciar() {
+        _uiState.value = RegistroUiState()
     }
 }

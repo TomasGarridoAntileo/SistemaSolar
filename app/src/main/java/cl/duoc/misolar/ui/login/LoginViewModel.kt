@@ -1,42 +1,52 @@
 package cl.duoc.misolar.ui.login
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import cl.duoc.misolar.util.validarCorreo
 import cl.duoc.misolar.util.validarPassword
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-// Clase 04: el ViewModel guarda el estado del formulario y valida.
-// La pantalla solo muestra los datos y avisa cuando el usuario escribe o presiona un boton.
+// Clase 05: el ViewModel expone un unico UiState mediante StateFlow.
+// Solo el ViewModel puede modificarlo (_uiState es privado); la pantalla solo lo lee.
 class LoginViewModel : ViewModel() {
 
-    var correo by mutableStateOf("")
-        private set
-    var password by mutableStateOf("")
-        private set
-
-    var errorCorreo by mutableStateOf<String?>(null)
-        private set
-    var errorPassword by mutableStateOf<String?>(null)
-        private set
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun cambiarCorreo(nuevoCorreo: String) {
-        correo = nuevoCorreo
-        // Si el campo ya mostraba un error, se vuelve a validar mientras el usuario corrige
-        if (errorCorreo != null) errorCorreo = validarCorreo(nuevoCorreo)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                correo = nuevoCorreo,
+                // Si el campo ya mostraba un error, se vuelve a validar mientras el usuario corrige
+                errorCorreo = if (estadoActual.errorCorreo != null) validarCorreo(nuevoCorreo) else null
+            )
+        }
     }
 
     fun cambiarPassword(nuevoPassword: String) {
-        password = nuevoPassword
-        if (errorPassword != null) errorPassword = validarPasswordLogin(nuevoPassword)
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                password = nuevoPassword,
+                errorPassword = if (estadoActual.errorPassword != null) validarPasswordLogin(nuevoPassword) else null
+            )
+        }
     }
 
     // Devuelve true si el formulario es valido.
     // En la etapa 4 tambien se revisara que el usuario exista en Room.
     fun ingresar(): Boolean {
-        errorCorreo = validarCorreo(correo)
-        errorPassword = validarPasswordLogin(password)
+        val estado = _uiState.value
+        val errorCorreo = validarCorreo(estado.correo)
+        val errorPassword = validarPasswordLogin(estado.password)
+
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                errorCorreo = errorCorreo,
+                errorPassword = errorPassword
+            )
+        }
         return errorCorreo == null && errorPassword == null
     }
 

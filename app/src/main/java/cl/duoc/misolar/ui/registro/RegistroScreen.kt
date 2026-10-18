@@ -24,13 +24,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duoc.misolar.ui.componentes.BarraSuperior
 import cl.duoc.misolar.ui.componentes.CampoValidado
@@ -41,7 +39,8 @@ fun RegistroScreen(
     onRegistroExitoso: () -> Unit,
     viewModel: RegistroViewModel = viewModel()
 ) {
-    var mostrarExito by rememberSaveable { mutableStateOf(false) }
+    // La pantalla observa el StateFlow y se recompone cuando cambia el estado
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { BarraSuperior(titulo = "Crear cuenta", onVolver = onVolver) }
@@ -60,54 +59,54 @@ fun RegistroScreen(
             )
 
             CampoValidado(
-                valor = viewModel.nombre,
+                valor = uiState.nombre,
                 onCambio = { viewModel.cambiarNombre(it) },
                 etiqueta = "Nombre",
                 icono = Icons.Filled.Person,
-                error = viewModel.errorNombre
+                error = uiState.errorNombre
             )
             CampoValidado(
-                valor = viewModel.apellido,
+                valor = uiState.apellido,
                 onCambio = { viewModel.cambiarApellido(it) },
                 etiqueta = "Apellido",
                 icono = Icons.Filled.Badge,
-                error = viewModel.errorApellido
+                error = uiState.errorApellido
             )
             CampoValidado(
-                valor = viewModel.correo,
+                valor = uiState.correo,
                 onCambio = { viewModel.cambiarCorreo(it) },
                 etiqueta = "Correo",
                 icono = Icons.Filled.Email,
-                error = viewModel.errorCorreo,
+                error = uiState.errorCorreo,
                 tipoTeclado = KeyboardType.Email
             )
             CampoValidado(
-                valor = viewModel.password,
+                valor = uiState.password,
                 onCambio = { viewModel.cambiarPassword(it) },
                 etiqueta = "Contraseña",
                 icono = Icons.Filled.Lock,
-                error = viewModel.errorPassword,
+                error = uiState.errorPassword,
                 esPassword = true,
                 tipoTeclado = KeyboardType.Password
             )
             CampoValidado(
-                valor = viewModel.repetirPassword,
+                valor = uiState.repetirPassword,
                 onCambio = { viewModel.cambiarRepetirPassword(it) },
                 etiqueta = "Repetir contraseña",
                 icono = Icons.Filled.Lock,
-                error = viewModel.errorRepetirPassword,
+                error = uiState.errorRepetirPassword,
                 esPassword = true,
                 tipoTeclado = KeyboardType.Password
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
-                    checked = viewModel.aceptaTerminos,
+                    checked = uiState.aceptaTerminos,
                     onCheckedChange = { viewModel.cambiarTerminos(it) }
                 )
                 Text("Acepto los términos y condiciones")
             }
-            val errorTerminos = viewModel.errorTerminos
+            val errorTerminos = uiState.errorTerminos
             if (errorTerminos != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -127,9 +126,7 @@ fun RegistroScreen(
             }
 
             Button(
-                onClick = {
-                    if (viewModel.registrar()) mostrarExito = true
-                },
+                onClick = { viewModel.registrar() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
@@ -139,14 +136,14 @@ fun RegistroScreen(
         }
     }
 
-    if (mostrarExito) {
+    if (uiState.registroExitoso) {
         AlertDialog(
             onDismissRequest = {},
             title = { Text("¡Cuenta creada!") },
             text = { Text("Ya puedes ingresar con tu correo y contraseña.") },
             confirmButton = {
                 TextButton(onClick = {
-                    mostrarExito = false
+                    viewModel.reiniciar()
                     onRegistroExitoso()
                 }) {
                     Text("Ir a ingresar")
