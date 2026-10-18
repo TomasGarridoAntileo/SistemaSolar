@@ -11,7 +11,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 
-// TopAppBar comun; si onVolver es null no se muestra la flecha
+// Si onVolver es null no se muestra la flecha
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BarraSuperior(

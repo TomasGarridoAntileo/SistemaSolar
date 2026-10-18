@@ -1,8 +1,6 @@
 package cl.duoc.misolar.ui.registro
 
-// Clase 05: estado completo del formulario de registro.
-// repetirPassword y aceptaTerminos son del formulario, no del usuario,
-// por eso viven aqui y no en el modelo Usuario.
+// Clase 05: UiState del formulario de registro
 data class RegistroUiState(
     val nombre: String = "",
     val apellido: String = "",

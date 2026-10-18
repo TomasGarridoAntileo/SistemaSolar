@@ -5,7 +5,7 @@ import androidx.room3.Insert
 import androidx.room3.Query
 import cl.duoc.misolar.model.Usuario
 
-// QUE operaciones se pueden hacer sobre la tabla usuarios
+// Clase 05: el DAO define QUE se puede hacer con la tabla
 @Dao
 interface UsuarioDao {
 

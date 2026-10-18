@@ -27,7 +27,7 @@ class PerfilViewModel(
         }
     }
 
-    // Borra la sesion en Room y despues avisa a la pantalla para que navegue al Login
+    // Borra la sesion y vuelve al Login
     fun cerrarSesion(alTerminar: () -> Unit) {
         viewModelScope.launch {
             repository.cerrarSesion()

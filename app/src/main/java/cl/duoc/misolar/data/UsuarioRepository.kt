@@ -3,7 +3,7 @@ package cl.duoc.misolar.data
 import cl.duoc.misolar.model.Sesion
 import cl.duoc.misolar.model.Usuario
 
-// COMO se obtienen y guardan los usuarios. Los ViewModel hablan con el Repository, nunca con el DAO.
+// Clase 05: el Repository define COMO se guardan y leen los datos
 class UsuarioRepository(
     private val usuarioDao: UsuarioDao,
     private val sesionDao: SesionDao
@@ -17,7 +17,7 @@ class UsuarioRepository(
         usuarioDao.insertar(usuario.copy(correo = normalizar(usuario.correo)))
     }
 
-    // Devuelve el usuario si el correo y la contrasena coinciden; si no, null
+    // Devuelve el usuario si los datos coinciden, si no null
     suspend fun autenticar(correo: String, password: String): Usuario? {
         val usuario = usuarioDao.buscarPorCorreo(normalizar(correo))
         return if (usuario != null && usuario.password == password) usuario else null
@@ -37,6 +37,6 @@ class UsuarioRepository(
         sesionDao.borrar()
     }
 
-    // Se guarda en minusculas y sin espacios para que "Tomas@Duoc.cl" y "tomas@duoc.cl" sean el mismo
+    // Correo en minusculas y sin espacios
     private fun normalizar(correo: String): String = correo.trim().lowercase()
 }

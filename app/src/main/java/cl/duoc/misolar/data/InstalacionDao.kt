@@ -16,7 +16,7 @@ interface InstalacionDao {
     @Update
     suspend fun actualizar(instalacion: Instalacion)
 
-    // Flow: la pantalla se actualiza sola cuando la instalacion cambia
+    // Flow: avisa cuando la instalacion cambia
     @Query("SELECT * FROM instalaciones WHERE usuarioId = :usuarioId LIMIT 1")
     fun observarPorUsuario(usuarioId: Int): Flow<Instalacion?>
 

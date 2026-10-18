@@ -38,10 +38,10 @@ fun LoginScreen(
     onIrARegistro: () -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
-    // La pantalla observa el StateFlow y se recompone cuando cambia el estado
+    // Clase 05: la pantalla observa el StateFlow
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Cuando el ViewModel confirma el login, se navega al Panel una sola vez
+    // Si el login es correcto, va al Panel
     LaunchedEffect(uiState.loginExitoso) {
         if (uiState.loginExitoso) {
             viewModel.reiniciar()

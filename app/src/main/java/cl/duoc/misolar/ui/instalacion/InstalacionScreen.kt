@@ -38,7 +38,7 @@ fun InstalacionScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Al guardar correctamente se vuelve al Panel
+    // Al guardar vuelve al Panel
     LaunchedEffect(uiState.guardadoExitoso) {
         if (uiState.guardadoExitoso) onVolver()
     }
@@ -98,7 +98,7 @@ fun InstalacionScreen(
                 tipoTeclado = KeyboardType.Number
             )
 
-            // Retroalimentacion en vivo: potencia total calculada
+            // Potencia total en vivo
             val potenciaTotal = uiState.potenciaTotalKw
             if (potenciaTotal != null) {
                 Card(

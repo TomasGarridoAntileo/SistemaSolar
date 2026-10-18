@@ -39,7 +39,7 @@ fun RegistroScreen(
     onRegistroExitoso: () -> Unit,
     viewModel: RegistroViewModel = viewModel()
 ) {
-    // La pantalla observa el StateFlow y se recompone cuando cambia el estado
+    // Clase 05: la pantalla observa el StateFlow
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(

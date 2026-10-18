@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-// Contenido temporal para las pantallas que se implementan en las siguientes etapas
+// Contenido temporal para pantallas pendientes
 @Composable
 fun EnConstruccion(
     descripcion: String,

@@ -26,8 +26,7 @@ class PanelViewModel(
 
     private val usuarioId = MutableStateFlow<Int?>(null)
 
-    // Clase 05: el Flow de Room se convierte en StateFlow con stateIn.
-    // Cuando se guarda o edita la instalacion, el Panel se actualiza solo.
+    // Clase 05: Flow de Room convertido en StateFlow con stateIn
     @OptIn(ExperimentalCoroutinesApi::class)
     val instalacion: StateFlow<Instalacion?> = usuarioId
         .flatMapLatest { id ->

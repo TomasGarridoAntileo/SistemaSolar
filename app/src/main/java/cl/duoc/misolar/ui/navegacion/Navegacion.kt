@@ -26,7 +26,7 @@ private const val DURACION_TRANSICION = 300
 fun Navegacion() {
     val navController = rememberNavController()
 
-    // Navegar entre las pestanas de la barra inferior sin apilar pantallas repetidas
+    // Cambia de pestana sin apilar pantallas
     val irAPestana: (String) -> Unit = { ruta ->
         navController.navigate(ruta) {
             popUpTo(Rutas.PANEL) { saveState = true }
@@ -39,7 +39,7 @@ fun Navegacion() {
     NavHost(
         navController = navController,
         startDestination = Rutas.LOGIN,
-        // Transicion: la pantalla nueva entra desde la derecha con desvanecido
+        // Animacion al cambiar de pantalla
         enterTransition = {
             slideInHorizontally(tween(DURACION_TRANSICION)) { it / 4 } + fadeIn(tween(DURACION_TRANSICION))
         },
@@ -101,14 +101,14 @@ fun Navegacion() {
     }
 }
 
-// Al ingresar se elimina Login de la pila para que "atras" no vuelva a el
+// Quita Login de la pila al ingresar
 private fun irAlPanelDesdeLogin(navController: NavHostController) {
     navController.navigate(Rutas.PANEL) {
         popUpTo(Rutas.LOGIN) { inclusive = true }
     }
 }
 
-// Al cerrar sesion se limpia toda la pila y se vuelve a Login
+// Limpia la pila y vuelve a Login
 private fun cerrarSesion(navController: NavHostController) {
     navController.navigate(Rutas.LOGIN) {
         popUpTo(navController.graph.id) { inclusive = true }

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-// Clase 05: UiState + StateFlow + Room. La pantalla lee uiState y llama a estas funciones.
+// Clase 05: AndroidViewModel porque necesita el Context para abrir la base de datos
 class RegistroViewModel(
     application: Application
 ) : AndroidViewModel(application) {
@@ -29,8 +29,7 @@ class RegistroViewModel(
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
 
-    // En cada cambio, si el campo ya tenia error se valida de nuevo para que el error
-    // desaparezca apenas el usuario lo corrige
+    // Si un campo ya tenia error, se valida otra vez al escribir
     fun cambiarNombre(nuevoNombre: String) {
         _uiState.update { estadoActual ->
             estadoActual.copy(
@@ -94,7 +93,7 @@ class RegistroViewModel(
         }
     }
 
-    // Valida todo el formulario y, si esta correcto, guarda el usuario en Room
+    // Valida y guarda el usuario en Room
     fun registrar() {
         val estado = _uiState.value
         val errorNombre = validarNombre(estado.nombre)
@@ -128,7 +127,7 @@ class RegistroViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(guardando = true) }
 
-            // Regla de negocio: no puede haber dos cuentas con el mismo correo
+            // No se permiten correos repetidos
             if (repository.existeCorreo(estado.correo)) {
                 _uiState.update {
                     it.copy(guardando = false, errorCorreo = "Ya existe una cuenta con este correo")
@@ -147,7 +146,7 @@ class RegistroViewModel(
         }
     }
 
-    // Se llama despues de mostrar el mensaje de exito: limpia el formulario
+    // Limpia el formulario
     fun reiniciar() {
         _uiState.value = RegistroUiState()
     }

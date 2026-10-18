@@ -6,9 +6,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-// Reglas de validacion de los formularios.
-// Cada funcion devuelve el mensaje de error, o null si el dato es valido.
-// Asi la pantalla solo muestra el mensaje y no decide nada.
+// Clase 04: cada funcion devuelve el mensaje de error, o null si esta bien
 
 private val REGEX_CORREO = Regex("^[\\w.+-]+@[\\w-]+(\\.[\\w-]+)+$")
 private val REGEX_NOMBRE = Regex("^[\\p{L} ]+$")
@@ -63,7 +61,7 @@ fun validarTerminos(aceptaTerminos: Boolean): String? {
     return if (aceptaTerminos) null else "Debe aceptar los términos y condiciones"
 }
 
-// ---------- Formulario de instalacion ----------
+// Formulario de instalacion
 
 fun validarNombreInstalacion(nombre: String): String? {
     return when {
@@ -74,7 +72,7 @@ fun validarNombreInstalacion(nombre: String): String? {
     }
 }
 
-// Valida que el texto sea un numero entero dentro de un rango
+// Numero entero dentro de un rango
 private fun validarEnteroEnRango(texto: String, campo: String, minimo: Int, maximo: Int, unidad: String = ""): String? {
     val numero = texto.trim().toIntOrNull()
     return when {
@@ -94,12 +92,11 @@ fun validarPotenciaPanel(texto: String): String? =
 fun validarPrecioKwh(texto: String): String? =
     validarEnteroEnRango(texto, "El precio del kWh", 1, 1000, " CLP")
 
-// Clase 04 (actividad extra): fecha con formato dd/mm/aaaa.
-// Se usa SimpleDateFormat porque funciona desde Android 7 (minSdk 24).
+// Clase 04: fecha con formato dd/mm/aaaa
 fun convertirFecha(texto: String): Date? {
     if (!Regex("^\\d{2}/\\d{2}/\\d{4}$").matches(texto.trim())) return null
     val formato = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    formato.isLenient = false // rechaza fechas imposibles como 31/02/2026
+    formato.isLenient = false // rechaza fechas como 31/02
     return try {
         formato.parse(texto.trim())
     } catch (e: ParseException) {

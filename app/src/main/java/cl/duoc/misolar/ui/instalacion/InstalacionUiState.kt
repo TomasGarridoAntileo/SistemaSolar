@@ -1,7 +1,6 @@
 package cl.duoc.misolar.ui.instalacion
 
-// Los numeros se guardan como texto mientras el usuario escribe;
-// el ViewModel los convierte a Int solo cuando son validos
+// Los numeros se guardan como texto mientras se escriben
 data class InstalacionUiState(
     val nombre: String = "",
     val cantidadPaneles: String = "",
@@ -19,7 +18,6 @@ data class InstalacionUiState(
     val guardando: Boolean = false,
     val guardadoExitoso: Boolean = false
 ) {
-    // Se calcula en vivo para mostrar la potencia total mientras se escribe
     val potenciaTotalKw: Double?
         get() {
             val paneles = cantidadPaneles.toIntOrNull() ?: return null

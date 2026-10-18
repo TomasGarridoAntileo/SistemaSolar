@@ -24,9 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 
-// Campo de texto reutilizable para todos los formularios.
-// Muestra un icono al inicio, el mensaje de error abajo y un icono de estado al final:
-// rojo si hay error, verde si el campo tiene datos y no tiene error.
+// Campo con icono, mensaje de error y check verde si esta bien
 @Composable
 fun CampoValidado(
     valor: String,

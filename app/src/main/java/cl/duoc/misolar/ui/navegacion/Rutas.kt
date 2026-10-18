@@ -1,6 +1,6 @@
 package cl.duoc.misolar.ui.navegacion
 
-// Nombres de las rutas en un solo lugar para no repetir textos
+// Clase 03: rutas de la navegacion
 object Rutas {
     const val LOGIN = "login"
     const val REGISTRO = "registro"

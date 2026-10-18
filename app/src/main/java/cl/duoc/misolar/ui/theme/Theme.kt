@@ -41,7 +41,7 @@ private val DarkColorScheme = darkColorScheme(
     surface = FondoOscuro
 )
 
-// Sin color dinamico (Android 12+) para que la app siempre use la paleta solar
+// Sin color dinamico para usar siempre la paleta solar
 @Composable
 fun MiSolarTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

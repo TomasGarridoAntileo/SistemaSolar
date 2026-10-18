@@ -31,7 +31,7 @@ class InstalacionViewModel(
 
     private var usuarioId: Int? = null
 
-    // Al abrir la pantalla: si el usuario ya tiene instalacion, se cargan sus datos para editarlos
+    // Si ya hay instalacion, se cargan sus datos para editar
     init {
         viewModelScope.launch {
             val usuario = usuarioRepository.obtenerUsuarioConSesion() ?: return@launch

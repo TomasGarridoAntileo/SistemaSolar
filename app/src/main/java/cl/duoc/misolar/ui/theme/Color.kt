@@ -2,7 +2,7 @@ package cl.duoc.misolar.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Paleta MiSolar: azul de panel solar + amarillo sol + verde energia
+// Paleta: azul panel, amarillo sol y verde energia
 
 // Tema claro
 val AzulPanel = Color(0xFF0D47A1)

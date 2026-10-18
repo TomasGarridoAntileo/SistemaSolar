@@ -13,7 +13,7 @@ class InstalacionRepository(private val instalacionDao: InstalacionDao) {
         return instalacionDao.buscarPorUsuario(usuarioId)
     }
 
-    // Si el usuario ya tiene instalacion se actualiza; si no, se crea
+    // Si ya existe se actualiza, si no se crea
     suspend fun guardar(instalacion: Instalacion) {
         val existente = instalacionDao.buscarPorUsuario(instalacion.usuarioId)
         if (existente == null) {

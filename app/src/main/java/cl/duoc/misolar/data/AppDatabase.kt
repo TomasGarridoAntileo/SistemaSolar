@@ -18,7 +18,7 @@ import cl.duoc.misolar.model.Usuario
         Lectura::class,
         Mantencion::class
     ],
-    // Version 2: se agregaron las tablas instalaciones, lecturas y mantenciones
+    // Version 2: se agregaron instalaciones, lecturas y mantenciones
     version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -26,7 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun sesionDao(): SesionDao
     abstract fun instalacionDao(): InstalacionDao
 
-    // Singleton: toda la app comparte una sola instancia de la base de datos
+    // Clase 05: singleton, una sola base de datos para toda la app
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null

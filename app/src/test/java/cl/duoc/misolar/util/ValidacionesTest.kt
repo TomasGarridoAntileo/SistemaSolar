@@ -5,7 +5,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-// Pruebas de las reglas de validacion (se ejecutan sin emulador)
+// Pruebas de las validaciones, sin emulador
 class ValidacionesTest {
 
     @Test
@@ -59,7 +59,7 @@ class ValidacionesTest {
         assertNull(validarTerminos(true))
     }
 
-    // ---------- Instalacion ----------
+    // Instalacion
 
     @Test
     fun cantidadPanelesConLetrasTieneError() {

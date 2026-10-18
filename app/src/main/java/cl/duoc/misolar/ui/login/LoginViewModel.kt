@@ -28,7 +28,7 @@ class LoginViewModel(
         _uiState.update { estadoActual ->
             estadoActual.copy(
                 correo = nuevoCorreo,
-                // Si el campo ya mostraba un error, se vuelve a validar mientras el usuario corrige
+                // Si ya tenia error, se valida otra vez
                 errorCorreo = if (estadoActual.errorCorreo != null) validarCorreo(nuevoCorreo) else null,
                 errorGeneral = null
             )
@@ -58,7 +58,7 @@ class LoginViewModel(
         }
         if (errorCorreo != null || errorPassword != null) return
 
-        // Consultar la base de datos se hace en una corrutina para no bloquear la pantalla
+        // Corrutina para consultar la base de datos
         viewModelScope.launch {
             _uiState.update { it.copy(cargando = true) }
             val usuario = repository.autenticar(estado.correo, estado.password)
@@ -73,12 +73,12 @@ class LoginViewModel(
         }
     }
 
-    // Se llama despues de navegar al Panel, para que al volver el formulario este limpio
+    // Limpia el formulario
     fun reiniciar() {
         _uiState.value = LoginUiState()
     }
 
-    // En el login solo se pide que no este vacia; las reglas completas se aplican al registrarse
+    // En el login solo se pide que no este vacia
     private fun validarPasswordLogin(password: String): String? {
         return if (password.isEmpty()) validarPassword(password) else null
     }
