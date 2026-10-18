@@ -60,7 +60,10 @@ fun Navegacion() {
             )
         }
         composable(Rutas.REGISTRO) {
-            RegistroScreen(onVolver = volver)
+            RegistroScreen(
+                onVolver = volver,
+                onRegistroExitoso = volver
+            )
         }
         composable(Rutas.PANEL) {
             PanelScreen(

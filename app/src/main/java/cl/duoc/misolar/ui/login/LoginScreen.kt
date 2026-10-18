@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.SolarPower
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -17,23 +21,28 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import cl.duoc.misolar.ui.componentes.CampoValidado
 import cl.duoc.misolar.ui.theme.MiSolarTheme
 
-// Etapa 1: solo navegacion. El formulario validado se agrega en la etapa de Login
 @Composable
 fun LoginScreen(
     onIngresar: () -> Unit,
-    onIrARegistro: () -> Unit
+    onIrARegistro: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
 ) {
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
@@ -49,10 +58,32 @@ fun LoginScreen(
             )
             Text(
                 text = "Controla la producción y mantención de tus paneles solares",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
             )
+
+            CampoValidado(
+                valor = viewModel.correo,
+                onCambio = { viewModel.cambiarCorreo(it) },
+                etiqueta = "Correo",
+                icono = Icons.Filled.Email,
+                error = viewModel.errorCorreo,
+                tipoTeclado = KeyboardType.Email
+            )
+            CampoValidado(
+                valor = viewModel.password,
+                onCambio = { viewModel.cambiarPassword(it) },
+                etiqueta = "Contraseña",
+                icono = Icons.Filled.Lock,
+                error = viewModel.errorPassword,
+                esPassword = true,
+                tipoTeclado = KeyboardType.Password
+            )
+
             Button(
-                onClick = onIngresar,
+                onClick = {
+                    if (viewModel.ingresar()) onIngresar()
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Ingresar")
