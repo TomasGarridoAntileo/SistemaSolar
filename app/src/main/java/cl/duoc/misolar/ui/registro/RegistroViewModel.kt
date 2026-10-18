@@ -1,6 +1,11 @@
 package cl.duoc.misolar.ui.registro
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import cl.duoc.misolar.data.AppDatabase
+import cl.duoc.misolar.data.UsuarioRepository
+import cl.duoc.misolar.model.Usuario
 import cl.duoc.misolar.util.validarApellido
 import cl.duoc.misolar.util.validarCorreo
 import cl.duoc.misolar.util.validarNombre
@@ -11,9 +16,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-// Clase 05: UiState + StateFlow. La pantalla lee uiState y llama a estas funciones.
-class RegistroViewModel : ViewModel() {
+// Clase 05: UiState + StateFlow + Room. La pantalla lee uiState y llama a estas funciones.
+class RegistroViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val database = AppDatabase.getInstance(application)
+    private val repository = UsuarioRepository(database.usuarioDao(), database.sesionDao())
 
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()
@@ -83,8 +94,7 @@ class RegistroViewModel : ViewModel() {
         }
     }
 
-    // Valida todo el formulario y, si esta correcto, marca el registro como exitoso.
-    // En la etapa 4 aqui se guardara el usuario en Room.
+    // Valida todo el formulario y, si esta correcto, guarda el usuario en Room
     fun registrar() {
         val estado = _uiState.value
         val errorNombre = validarNombre(estado.nombre)
@@ -94,6 +104,17 @@ class RegistroViewModel : ViewModel() {
         val errorRepetirPassword = validarRepetirPassword(estado.password, estado.repetirPassword)
         val errorTerminos = validarTerminos(estado.aceptaTerminos)
 
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                errorNombre = errorNombre,
+                errorApellido = errorApellido,
+                errorCorreo = errorCorreo,
+                errorPassword = errorPassword,
+                errorRepetirPassword = errorRepetirPassword,
+                errorTerminos = errorTerminos
+            )
+        }
+
         val formularioValido = listOf(
             errorNombre,
             errorApellido,
@@ -102,17 +123,27 @@ class RegistroViewModel : ViewModel() {
             errorRepetirPassword,
             errorTerminos
         ).all { it == null }
+        if (!formularioValido) return
 
-        _uiState.update { estadoActual ->
-            estadoActual.copy(
-                errorNombre = errorNombre,
-                errorApellido = errorApellido,
-                errorCorreo = errorCorreo,
-                errorPassword = errorPassword,
-                errorRepetirPassword = errorRepetirPassword,
-                errorTerminos = errorTerminos,
-                registroExitoso = formularioValido
+        viewModelScope.launch {
+            _uiState.update { it.copy(guardando = true) }
+
+            // Regla de negocio: no puede haber dos cuentas con el mismo correo
+            if (repository.existeCorreo(estado.correo)) {
+                _uiState.update {
+                    it.copy(guardando = false, errorCorreo = "Ya existe una cuenta con este correo")
+                }
+                return@launch
+            }
+
+            val usuario = Usuario(
+                nombre = estado.nombre.trim(),
+                apellido = estado.apellido.trim(),
+                correo = estado.correo,
+                password = estado.password
             )
+            repository.registrar(usuario)
+            _uiState.update { it.copy(guardando = false, registroExitoso = true) }
         }
     }
 

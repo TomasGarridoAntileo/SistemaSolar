@@ -13,7 +13,7 @@ Proyecto de la **Evaluación Parcial 2** de *DSY1105 Desarrollo de Aplicaciones 
 | Tema Material 3 con paleta solar | ✅ |
 | Navegación entre pantallas con barra inferior, flecha de volver y transiciones animadas | ✅ |
 | Login y registro con validaciones por campo (ícono y mensaje) | ✅ |
-| Persistencia local con Room | ⏳ |
+| Persistencia local con Room (usuarios y sesión) | ✅ |
 | Registro de la instalación con ubicación GPS | ⏳ |
 | Lecturas de producción con foto (cámara / galería) | ⏳ |
 | Historial de mantenciones con foto | ⏳ |

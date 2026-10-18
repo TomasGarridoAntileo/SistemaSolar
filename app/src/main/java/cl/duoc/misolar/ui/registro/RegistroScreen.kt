@@ -127,11 +127,12 @@ fun RegistroScreen(
 
             Button(
                 onClick = { viewModel.registrar() },
+                enabled = !uiState.guardando,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) {
-                Text("Registrarse")
+                Text(if (uiState.guardando) "Guardando..." else "Registrarse")
             }
         }
     }
