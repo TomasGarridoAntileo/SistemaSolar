@@ -114,3 +114,45 @@ fun validarFechaPasada(texto: String, hoy: Date = Date()): String? {
         else -> null
     }
 }
+
+// Formulario de lectura
+
+const val LARGO_MAXIMO_NOTA = 100
+
+// Un panel no produce mas que su potencia por 12 horas de sol
+const val HORAS_SOL_MAXIMAS = 12
+
+// Acepta coma o punto: "12,5" o "12.5"
+fun convertirKwh(texto: String): Double? {
+    return texto.trim().replace(',', '.').toDoubleOrNull()
+}
+
+fun validarKwh(texto: String, potenciaTotalKw: Double): String? {
+    val kwh = convertirKwh(texto)
+    val maximo = potenciaTotalKw * HORAS_SOL_MAXIMAS
+    return when {
+        texto.isBlank() -> "Los kWh son obligatorios"
+        kwh == null -> "Ingrese un número, por ejemplo 12,5"
+        kwh <= 0 -> "Debe ser mayor que 0"
+        kwh > maximo -> "Tu instalación produce como máximo ${formatearKwh(maximo)} kWh al día"
+        else -> null
+    }
+}
+
+// La lectura no puede ser futura ni anterior a la instalacion
+fun validarFechaLectura(texto: String, fechaInstalacion: String, hoy: Date = Date()): String? {
+    val error = validarFechaPasada(texto, hoy)
+    if (error != null) return error
+    val fecha = convertirFecha(texto)
+    val instalada = convertirFecha(fechaInstalacion)
+    return if (fecha != null && instalada != null && fecha.before(instalada)) {
+        "No puede ser antes de la instalación ($fechaInstalacion)"
+    } else {
+        null
+    }
+}
+
+// La nota es opcional
+fun validarNota(nota: String): String? {
+    return if (nota.trim().length > LARGO_MAXIMO_NOTA) "Máximo $LARGO_MAXIMO_NOTA caracteres" else null
+}

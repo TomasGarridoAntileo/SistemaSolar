@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duoc.misolar.data.AppDatabase
 import cl.duoc.misolar.data.InstalacionRepository
+import cl.duoc.misolar.data.LecturaRepository
 import cl.duoc.misolar.data.UsuarioRepository
 import cl.duoc.misolar.model.Instalacion
+import cl.duoc.misolar.util.mesActualIso
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +25,7 @@ class PanelViewModel(
     private val database = AppDatabase.getInstance(application)
     private val usuarioRepository = UsuarioRepository(database.usuarioDao(), database.sesionDao())
     private val instalacionRepository = InstalacionRepository(database.instalacionDao())
+    private val lecturaRepository = LecturaRepository(database.lecturaDao())
 
     private val usuarioId = MutableStateFlow<Int?>(null)
 
@@ -36,6 +39,18 @@ class PanelViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
+        )
+
+    // Suma de kWh del mes actual
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val kwhDelMes: StateFlow<Double> = usuarioId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(0.0) else lecturaRepository.observarKwhDelMes(id, mesActualIso())
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0.0
         )
 
     init {

@@ -26,6 +26,9 @@ import cl.duoc.misolar.model.Instalacion
 import cl.duoc.misolar.ui.componentes.BarraInferior
 import cl.duoc.misolar.ui.componentes.BarraSuperior
 import cl.duoc.misolar.ui.navegacion.Rutas
+import cl.duoc.misolar.util.calcularAhorro
+import cl.duoc.misolar.util.formatearKwh
+import cl.duoc.misolar.util.formatearPesos
 import java.util.Locale
 
 @Composable
@@ -35,6 +38,7 @@ fun PanelScreen(
     viewModel: PanelViewModel = viewModel()
 ) {
     val instalacion by viewModel.instalacion.collectAsStateWithLifecycle()
+    val kwhDelMes by viewModel.kwhDelMes.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { BarraSuperior(titulo = "Mi panel") },
@@ -54,20 +58,7 @@ fun PanelScreen(
                 ResumenInstalacion(datos, onIrAInstalacion)
             }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text("Resumen del mes", style = MaterialTheme.typography.titleLarge)
-                    Text("Aquí se mostrarán los kWh producidos y el ahorro estimado (etapa 6).")
-                }
-            }
+            ResumenMes(kwhDelMes, datos)
         }
     }
 }
@@ -111,6 +102,35 @@ private fun ResumenInstalacion(instalacion: Instalacion, onIrAInstalacion: () ->
             OutlinedButton(onClick = onIrAInstalacion, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Filled.Edit, contentDescription = null)
                 Text("  Editar instalación")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ResumenMes(kwhDelMes: Double, instalacion: Instalacion?) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text("Resumen del mes", style = MaterialTheme.typography.titleLarge)
+            Text(
+                "${formatearKwh(kwhDelMes)} kWh producidos",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            if (instalacion != null) {
+                Text(
+                    "Ahorro estimado: ${formatearPesos(calcularAhorro(kwhDelMes, instalacion.precioKwh))}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            } else {
+                Text("Registra tu instalación para calcular el ahorro.")
             }
         }
     }

@@ -25,6 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
     abstract fun sesionDao(): SesionDao
     abstract fun instalacionDao(): InstalacionDao
+    abstract fun lecturaDao(): LecturaDao
 
     // Clase 05: singleton, una sola base de datos para toda la app
     companion object {

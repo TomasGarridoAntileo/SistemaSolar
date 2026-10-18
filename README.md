@@ -16,9 +16,11 @@ Proyecto de la **Evaluación Parcial 2** de *DSY1105 Desarrollo de Aplicaciones 
 | Persistencia local con Room (usuarios y sesión) | ✅ |
 | Registro y edición de la instalación (paneles, potencia, fecha, precio kWh) | ✅ |
 | Ubicación GPS de la instalación | ⏳ |
-| Lecturas de producción con foto (cámara / galería) | ⏳ |
+| Lecturas de producción diaria: lista, nueva lectura validada y eliminar con confirmación | ✅ |
+| Foto del inversor en la lectura (cámara / galería) | ⏳ |
 | Historial de mantenciones con foto | ⏳ |
-| Panel con kWh del mes, ahorro estimado y sensor de luz | ⏳ |
+| Panel con kWh del mes y ahorro estimado | ✅ |
+| Sensor de luz en el Panel | ⏳ |
 
 Los requisitos completos están en [docs/requisitos-alcance.md](docs/requisitos-alcance.md).
 

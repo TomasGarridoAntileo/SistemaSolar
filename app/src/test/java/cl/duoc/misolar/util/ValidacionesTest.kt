@@ -103,4 +103,35 @@ class ValidacionesTest {
     fun precioKwhVacioTieneError() {
         assertEquals("El precio del kWh es obligatorio", validarPrecioKwh(""))
     }
+
+    // Lectura
+
+    @Test
+    fun kwhConComaEsValido() {
+        // 4 kW x 12 horas = 48 kWh maximo
+        assertNull(validarKwh("12,5", 4.0))
+    }
+
+    @Test
+    fun kwhSobreElMaximoTieneError() {
+        assertNotNull(validarKwh("60", 4.0))
+    }
+
+    @Test
+    fun kwhCeroOTextoTieneError() {
+        assertEquals("Debe ser mayor que 0", validarKwh("0", 4.0))
+        assertEquals("Ingrese un número, por ejemplo 12,5", validarKwh("abc", 4.0))
+    }
+
+    @Test
+    fun lecturaAntesDeLaInstalacionTieneError() {
+        assertNotNull(validarFechaLectura("01/01/2024", "15/03/2024"))
+        assertNull(validarFechaLectura("20/03/2024", "15/03/2024"))
+    }
+
+    @Test
+    fun notaMuyLargaTieneError() {
+        assertNull(validarNota(""))
+        assertNotNull(validarNota("a".repeat(101)))
+    }
 }
