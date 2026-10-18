@@ -14,7 +14,8 @@ Proyecto de la **Evaluación Parcial 2** de *DSY1105 Desarrollo de Aplicaciones 
 | Navegación entre pantallas con barra inferior, flecha de volver y transiciones animadas | ✅ |
 | Login y registro con validaciones por campo (ícono y mensaje) | ✅ |
 | Persistencia local con Room (usuarios y sesión) | ✅ |
-| Registro de la instalación con ubicación GPS | ⏳ |
+| Registro y edición de la instalación (paneles, potencia, fecha, precio kWh) | ✅ |
+| Ubicación GPS de la instalación | ⏳ |
 | Lecturas de producción con foto (cámara / galería) | ⏳ |
 | Historial de mantenciones con foto | ⏳ |
 | Panel con kWh del mes, ahorro estimado y sensor de luz | ⏳ |

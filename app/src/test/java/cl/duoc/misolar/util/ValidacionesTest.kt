@@ -58,4 +58,49 @@ class ValidacionesTest {
         assertNotNull(validarTerminos(false))
         assertNull(validarTerminos(true))
     }
+
+    // ---------- Instalacion ----------
+
+    @Test
+    fun cantidadPanelesConLetrasTieneError() {
+        assertEquals("Ingrese solo números enteros", validarCantidadPaneles("diez"))
+    }
+
+    @Test
+    fun cantidadPanelesFueraDeRangoTieneError() {
+        assertNotNull(validarCantidadPaneles("0"))
+        assertNotNull(validarCantidadPaneles("101"))
+        assertNull(validarCantidadPaneles("12"))
+    }
+
+    @Test
+    fun potenciaPanelValida() {
+        assertNull(validarPotenciaPanel("450"))
+        assertNotNull(validarPotenciaPanel("50"))
+    }
+
+    @Test
+    fun fechaConFormatoIncorrectoTieneError() {
+        assertEquals("Use el formato dd/mm/aaaa con una fecha real", validarFechaPasada("2026-01-10"))
+    }
+
+    @Test
+    fun fechaImposibleTieneError() {
+        assertNotNull(validarFechaPasada("31/02/2025"))
+    }
+
+    @Test
+    fun fechaFuturaTieneError() {
+        assertEquals("La fecha no puede ser futura", validarFechaPasada("01/01/2099"))
+    }
+
+    @Test
+    fun fechaPasadaValida() {
+        assertNull(validarFechaPasada("15/03/2024"))
+    }
+
+    @Test
+    fun precioKwhVacioTieneError() {
+        assertEquals("El precio del kWh es obligatorio", validarPrecioKwh(""))
+    }
 }
