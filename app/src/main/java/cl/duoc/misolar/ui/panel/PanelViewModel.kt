@@ -53,6 +53,18 @@ class PanelViewModel(
             initialValue = 0.0
         )
 
+    // Dias del mes con lectura, para calcular el rendimiento
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val diasDelMes: StateFlow<Int> = usuarioId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(0) else lecturaRepository.observarDiasDelMes(id, mesActualIso())
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
     init {
         viewModelScope.launch {
             usuarioId.value = usuarioRepository.obtenerUsuarioConSesion()?.id

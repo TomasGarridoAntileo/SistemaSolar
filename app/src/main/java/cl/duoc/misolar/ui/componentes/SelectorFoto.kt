@@ -4,6 +4,11 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,20 +70,27 @@ fun SelectorFoto(
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (fotoUri != null) {
-            // Clase 06: Coil carga la imagen desde la URI
-            AsyncImage(
-                model = fotoUri,
-                contentDescription = "Foto del inversor",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(4f / 3f)
-                    .clip(RoundedCornerShape(16.dp))
-            )
-            TextButton(onClick = onQuitarFoto) {
-                Icon(Icons.Filled.Delete, contentDescription = null)
-                Text("  Quitar foto")
+        // Clase 06: la foto aparece y desaparece con animacion
+        AnimatedVisibility(
+            visible = fotoUri != null,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Clase 06: Coil carga la imagen desde la URI
+                AsyncImage(
+                    model = fotoUri,
+                    contentDescription = "Foto del inversor",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(4f / 3f)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+                TextButton(onClick = onQuitarFoto) {
+                    Icon(Icons.Filled.Delete, contentDescription = null)
+                    Text("  Quitar foto")
+                }
             }
         }
 

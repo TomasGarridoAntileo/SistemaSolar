@@ -20,6 +20,7 @@ Proyecto de la **Evaluación Parcial 2** de *DSY1105 Desarrollo de Aplicaciones 
 | Foto del inversor en la lectura (cámara con FileProvider / galería con Photo Picker, se muestra con Coil) | ✅ |
 | Historial de mantenciones (limpieza, revisión, reparación) con foto obligatoria y eliminar con confirmación | ✅ |
 | Panel con kWh del mes y ahorro estimado | ✅ |
+| Animaciones: Crossfade en la instalación, color del rendimiento con animateColorAsState y detalles con AnimatedVisibility | ✅ |
 | Sensor de luz en el Panel | ⏳ |
 
 Los requisitos completos están en [docs/requisitos-alcance.md](docs/requisitos-alcance.md).

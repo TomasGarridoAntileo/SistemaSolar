@@ -13,6 +13,10 @@ class LecturaRepository(private val lecturaDao: LecturaDao) {
         return lecturaDao.observarKwhDelMes(usuarioId, mes)
     }
 
+    fun observarDiasDelMes(usuarioId: Int, mes: String): Flow<Int> {
+        return lecturaDao.observarDiasDelMes(usuarioId, mes)
+    }
+
     // Una lectura por dia
     suspend fun existeFecha(usuarioId: Int, fecha: String): Boolean {
         return lecturaDao.contarPorFecha(usuarioId, fecha) > 0

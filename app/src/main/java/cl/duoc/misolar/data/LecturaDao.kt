@@ -24,6 +24,10 @@ interface LecturaDao {
     @Query("SELECT COALESCE(SUM(kwh), 0) FROM lecturas WHERE usuarioId = :usuarioId AND fecha LIKE :mes || '%'")
     fun observarKwhDelMes(usuarioId: Int, mes: String): Flow<Double>
 
+    // Cuantos dias del mes tienen lectura
+    @Query("SELECT COUNT(*) FROM lecturas WHERE usuarioId = :usuarioId AND fecha LIKE :mes || '%'")
+    fun observarDiasDelMes(usuarioId: Int, mes: String): Flow<Int>
+
     @Query("SELECT COUNT(*) FROM lecturas WHERE usuarioId = :usuarioId AND fecha = :fecha")
     suspend fun contarPorFecha(usuarioId: Int, fecha: String): Int
 }

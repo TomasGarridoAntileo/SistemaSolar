@@ -21,4 +21,13 @@ class FormatoTest {
     fun pesosConPuntoDeMiles() {
         assertEquals("$15.300", formatearPesos(15300))
     }
+
+    @Test
+    fun rendimientoSegunLoEsperado() {
+        // 4 kW x 4 horas x 2 dias = 32 kWh esperados
+        assertEquals(100, calcularRendimiento(32.0, 2, 4.0))
+        assertEquals(NivelRendimiento.EXCELENTE, nivelRendimiento(100))
+        assertEquals(NivelRendimiento.BAJO, nivelRendimiento(calcularRendimiento(10.0, 2, 4.0)))
+        assertEquals(NivelRendimiento.SIN_DATOS, nivelRendimiento(calcularRendimiento(0.0, 0, 4.0)))
+    }
 }

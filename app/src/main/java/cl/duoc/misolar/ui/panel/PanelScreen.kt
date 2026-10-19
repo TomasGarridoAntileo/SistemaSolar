@@ -1,5 +1,13 @@
 package cl.duoc.misolar.ui.panel
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,9 +34,12 @@ import cl.duoc.misolar.model.Instalacion
 import cl.duoc.misolar.ui.componentes.BarraInferior
 import cl.duoc.misolar.ui.componentes.BarraSuperior
 import cl.duoc.misolar.ui.navegacion.Rutas
+import cl.duoc.misolar.util.NivelRendimiento
 import cl.duoc.misolar.util.calcularAhorro
+import cl.duoc.misolar.util.calcularRendimiento
 import cl.duoc.misolar.util.formatearKwh
 import cl.duoc.misolar.util.formatearPesos
+import cl.duoc.misolar.util.nivelRendimiento
 import java.util.Locale
 
 @Composable
@@ -39,6 +50,7 @@ fun PanelScreen(
 ) {
     val instalacion by viewModel.instalacion.collectAsStateWithLifecycle()
     val kwhDelMes by viewModel.kwhDelMes.collectAsStateWithLifecycle()
+    val diasDelMes by viewModel.diasDelMes.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { BarraSuperior(titulo = "Mi panel") },
@@ -51,14 +63,16 @@ fun PanelScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val datos = instalacion
-            if (datos == null) {
-                SinInstalacion(onIrAInstalacion)
-            } else {
-                ResumenInstalacion(datos, onIrAInstalacion)
+            // Clase 06: Crossfade cambia suave entre las dos tarjetas
+            Crossfade(targetState = instalacion, label = "instalacion") { datos ->
+                if (datos == null) {
+                    SinInstalacion(onIrAInstalacion)
+                } else {
+                    ResumenInstalacion(datos, onIrAInstalacion)
+                }
             }
 
-            ResumenMes(kwhDelMes, datos)
+            ResumenMes(kwhDelMes, diasDelMes, instalacion)
         }
     }
 }
@@ -108,12 +122,26 @@ private fun ResumenInstalacion(instalacion: Instalacion, onIrAInstalacion: () ->
 }
 
 @Composable
-private fun ResumenMes(kwhDelMes: Double, instalacion: Instalacion?) {
+private fun ResumenMes(kwhDelMes: Double, diasDelMes: Int, instalacion: Instalacion?) {
+    val porcentaje = instalacion?.let { calcularRendimiento(kwhDelMes, diasDelMes, it.potenciaTotalKw) }
+    val nivel = nivelRendimiento(porcentaje)
+
+    // Clase 06: el color de la tarjeta cambia segun el rendimiento
+    val colorObjetivo = when (nivel) {
+        NivelRendimiento.SIN_DATOS -> MaterialTheme.colorScheme.surfaceVariant
+        NivelRendimiento.BAJO -> MaterialTheme.colorScheme.errorContainer
+        NivelRendimiento.NORMAL -> MaterialTheme.colorScheme.secondaryContainer
+        NivelRendimiento.EXCELENTE -> MaterialTheme.colorScheme.tertiaryContainer
+    }
+    val colorTarjeta by animateColorAsState(
+        targetValue = colorObjetivo,
+        animationSpec = tween(600),
+        label = "colorRendimiento"
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+        colors = CardDefaults.cardColors(containerColor = colorTarjeta)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -124,12 +152,23 @@ private fun ResumenMes(kwhDelMes: Double, instalacion: Instalacion?) {
                 "${formatearKwh(kwhDelMes)} kWh producidos",
                 style = MaterialTheme.typography.headlineSmall
             )
-            if (instalacion != null) {
-                Text(
-                    "Ahorro estimado: ${formatearPesos(calcularAhorro(kwhDelMes, instalacion.precioKwh))}",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            } else {
+            Text(nivel.mensaje, style = MaterialTheme.typography.titleMedium)
+
+            // Clase 06: el detalle aparece solo cuando hay lecturas
+            AnimatedVisibility(
+                visible = instalacion != null && porcentaje != null,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (instalacion != null && porcentaje != null) {
+                        Text("Ahorro estimado: ${formatearPesos(calcularAhorro(kwhDelMes, instalacion.precioKwh))}")
+                        Text("$porcentaje% de lo esperado en $diasDelMes días con lectura")
+                    }
+                }
+            }
+
+            if (instalacion == null) {
                 Text("Registra tu instalación para calcular el ahorro.")
             }
         }
