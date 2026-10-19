@@ -18,11 +18,10 @@ Entrega: repo GitHub **público** (con acceso al docente), README (descripción,
 
 Problemática: muchas casas tienen paneles solares, pero los dueños no saben cuánto producen ni cuándo limpiarlos o revisarlos, y pierden rendimiento sin darse cuenta. MiSolar permite registrar la instalación, anotar la producción diaria (kWh) con foto del inversor, llevar un historial de mantenciones y ver el ahorro estimado.
 
-Recursos nativos (4, el mínimo es 2):
+Recursos nativos (3, el mínimo es 2):
 - **Cámara**: foto del display del inversor o del panel sucio/limpio (TakePicture + FileProvider, clase 06).
 - **Galería**: elegir una foto ya tomada (Photo Picker, clase 06).
 - **Ubicación GPS**: guardar dónde está la instalación (permiso en tiempo de ejecución).
-- **Sensor de luz**: medir la luminosidad actual (lux) y decir si es buen momento de producción. Muy coherente con el tema y fácil de mostrar en la defensa.
 
 > Trabajas solo: la pauta habla de parejas, así que conviene confirmar con el profe que acepta entrega individual y cómo evalúa la parte de "commits distribuidos".
 
@@ -33,7 +32,7 @@ Recursos nativos (4, el mínimo es 2):
 Login ──► Registro
   │
   ▼
-Panel (resumen: kWh del mes, ahorro estimado, luz actual del sensor)
+Panel (resumen: kWh del mes, ahorro estimado, rendimiento del mes)
   ├──► Instalación (formulario: datos de los paneles + ubicación GPS)
   ├──► Producción (lista de lecturas) ──► NuevaLectura (formulario + foto)
   ├──► Mantenciones (lista) ──► NuevaMantencion (formulario + foto antes/después)
@@ -47,7 +46,7 @@ Panel (resumen: kWh del mes, ahorro estimado, luz actual del sensor)
 |---|---|
 | Login | correo (con `@`, termina en `.cl`), contraseña (≥ 8) |
 | Registro | nombre, apellido, correo, contraseña, repetir contraseña (iguales), aceptar términos |
-| Instalación | nombre (ej. "Casa"), cantidad de paneles (entero 1 a 100), potencia por panel en W (100 a 800), fecha de instalación (dd/mm/aaaa, no futura), precio kWh en CLP (> 0), ubicación (obligatoria) |
+| Instalación | nombre (ej. "Casa"), cantidad de paneles (entero 1 a 100), potencia por panel en W (100 a 800), fecha de instalación (dd/mm/aaaa, no futura), precio kWh en CLP (> 0), ubicación GPS (opcional, con botón) |
 | Nueva lectura | fecha (no futura, no repetida), kWh producidos (número > 0 y razonable según la potencia instalada), foto del inversor (opcional), nota (máx. 100) |
 | Nueva mantención | tipo (Limpieza, Revisión, Reparación), fecha, descripción (≥ 10), foto (obligatoria) |
 
@@ -70,7 +69,7 @@ cl/duoc/misolar/
   ui/perfil/    PerfilScreen.kt
   ui/componentes/ CampoValidado.kt, TarjetaLectura.kt, SelectorFoto.kt
   ui/theme/     Color.kt (paleta amarillo solar + azul), Type.kt, Theme.kt
-  util/         Validaciones.kt, CamaraUtils.kt, UbicacionUtils.kt, SensorLuz.kt, CalculosSolares.kt
+  util/         Validaciones.kt, CamaraUtils.kt, UbicacionUtils.kt, CalculosSolares.kt
 ```
 - ViewModels con `MutableStateFlow` + `update { it.copy(...) }`, UI con `collectAsStateWithLifecycle()`.
 - Room 3 + KSP. Lecturas con `Flow` + `stateIn`; el Panel suma kWh del mes con una `@Query` (`SUM(kwh)`).
@@ -79,12 +78,11 @@ cl/duoc/misolar/
 ### Recursos nativos
 - Cámara: `TakePicture()` + FileProvider (`res/xml/file_paths.xml`), URI pendiente en `rememberSaveable`.
 - Galería: `PickVisualMedia(ImageOnly)`, sin permiso de almacenamiento (acceso mínimo).
-- Ubicación: `ACCESS_FINE_LOCATION` con `RequestPermission()`, mensaje claro si lo niegan.
-- Sensor de luz: `SensorManager` + `Sensor.TYPE_LIGHT`, registrado en un `DisposableEffect` para soltarlo al salir. No necesita permiso. En el emulador se prueba en *Extended controls > Virtual sensors*.
+- Ubicación: `ACCESS_FINE_LOCATION` y `ACCESS_COARSE_LOCATION` con `RequestMultiplePermissions()`, mensaje claro si lo niegan; `LocationManager` entrega la posición.
 - Fotos con Coil 3 (`AsyncImage`).
 
 ### Animaciones (cada una con propósito)
-- Indicador de luz del sensor: `animateFloatAsState` en una barra o sol que crece con los lux, y `animateColorAsState` (gris → amarillo).
+- Color del rendimiento del mes con `animateColorAsState` (gris, rojo, amarillo o verde).
 - `AnimatedVisibility` para mensajes de error y vista previa de la foto.
 - `Crossfade` entre "sin foto" y "foto tomada".
 - Transiciones entre pantallas en el `NavHost` (slide + fade).
@@ -99,9 +97,9 @@ Trello es un tablero gratis de tareas en tarjetas (trello.com). Crea un tablero 
 | 7 | Navegación · Login y Registro · Validaciones.kt + UiState |
 | 8 | Room (entidades, DAOs, repositorios) · Formulario Instalación |
 | 9 | Producción: lista + nueva lectura · Cámara y galería |
-| 10 | Mantenciones · Ubicación GPS · Sensor de luz · Animaciones |
+| 10 | Mantenciones · Ubicación GPS · Animaciones |
 | 11 | Pruebas en emulador · README final · Entrega AVA |
 
 Alternativa: **GitHub Projects** (pestaña Projects del repo) sirve igual ("Trello o similar") y queda junto a los commits e issues.
 
-Commits pequeños y técnicos, uno por avance, por ejemplo `feat(produccion): validar kWh segun potencia instalada` o `feat(sensor): leer TYPE_LIGHT en PanelScreen`.
+Commits pequeños y técnicos, uno por avance, por ejemplo `feat(produccion): validar kWh segun potencia instalada` o `feat(instalacion): obtener ubicacion GPS con permiso`.

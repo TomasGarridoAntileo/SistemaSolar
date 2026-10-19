@@ -14,6 +14,12 @@ data class InstalacionUiState(
     val errorFechaInstalacion: String? = null,
     val errorPrecioKwh: String? = null,
 
+    // Ubicacion GPS (opcional)
+    val latitud: Double? = null,
+    val longitud: Double? = null,
+    val buscandoUbicacion: Boolean = false,
+    val mensajeUbicacion: String? = null,
+
     val esEdicion: Boolean = false,
     val guardando: Boolean = false,
     val guardadoExitoso: Boolean = false

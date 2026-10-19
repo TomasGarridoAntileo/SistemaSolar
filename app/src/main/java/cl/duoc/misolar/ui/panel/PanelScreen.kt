@@ -37,6 +37,7 @@ import cl.duoc.misolar.ui.navegacion.Rutas
 import cl.duoc.misolar.util.NivelRendimiento
 import cl.duoc.misolar.util.calcularAhorro
 import cl.duoc.misolar.util.calcularRendimiento
+import cl.duoc.misolar.util.formatearCoordenadas
 import cl.duoc.misolar.util.formatearKwh
 import cl.duoc.misolar.util.formatearPesos
 import cl.duoc.misolar.util.nivelRendimiento
@@ -113,6 +114,11 @@ private fun ResumenInstalacion(instalacion: Instalacion, onIrAInstalacion: () ->
                 style = MaterialTheme.typography.titleMedium
             )
             Text("Instalada el ${instalacion.fechaInstalacion} · kWh a \$${instalacion.precioKwh}")
+            val latitud = instalacion.latitud
+            val longitud = instalacion.longitud
+            if (latitud != null && longitud != null) {
+                Text("📍 ${formatearCoordenadas(latitud, longitud)}")
+            }
             OutlinedButton(onClick = onIrAInstalacion, modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Filled.Edit, contentDescription = null)
                 Text("  Editar instalación")

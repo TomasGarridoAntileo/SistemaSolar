@@ -30,4 +30,9 @@ class FormatoTest {
         assertEquals(NivelRendimiento.BAJO, nivelRendimiento(calcularRendimiento(10.0, 2, 4.0)))
         assertEquals(NivelRendimiento.SIN_DATOS, nivelRendimiento(calcularRendimiento(0.0, 0, 4.0)))
     }
+
+    @Test
+    fun coordenadasConCuatroDecimales() {
+        assertEquals("-33.4489, -70.6693", formatearCoordenadas(-33.44889, -70.66926))
+    }
 }

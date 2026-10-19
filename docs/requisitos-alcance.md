@@ -19,9 +19,9 @@ Desarrollar una app móvil que permita al dueño de una instalación solar domé
 - Registro de **una** instalación solar por usuario (cantidad de paneles, potencia, fecha, precio del kWh y ubicación GPS).
 - Registro, listado y eliminación de lecturas de producción diaria (kWh), con foto opcional del inversor.
 - Registro, listado y eliminación de mantenciones (limpieza, revisión, reparación) con foto obligatoria.
-- Panel principal con kWh del mes, ahorro estimado en CLP y nivel de luz actual medido con el sensor del teléfono.
+- Panel principal con kWh del mes, ahorro estimado en CLP y rendimiento del mes (porcentaje de lo esperado).
 - Persistencia local con Room (SQLite).
-- Recursos nativos: cámara, galería (Photo Picker), ubicación GPS y sensor de luz.
+- Recursos nativos: cámara, galería (Photo Picker) y ubicación GPS.
 - Animaciones de retroalimentación y transiciones entre pantallas.
 
 ### 3.2 Fuera de alcance (posibles mejoras para la EFT)
@@ -31,6 +31,7 @@ Desarrollar una app móvil que permita al dueño de una instalación solar domé
 - Gráficos históricos avanzados y exportación a PDF/Excel.
 - Notificaciones programadas de recordatorio de limpieza.
 - Pronóstico del clima o radiación solar por internet.
+- Sensor de luz del teléfono para medir la luminosidad actual (lux).
 - Cifrado de contraseñas y recuperación de cuenta.
 
 ### 3.3 Supuestos y restricciones
@@ -56,7 +57,7 @@ Desarrollar una app móvil que permita al dueño de una instalación solar domé
 | RF11 | El usuario puede ver el historial de mantenciones con su foto, y eliminar una con confirmación. | Media |
 | RF12 | La foto de una lectura o mantención se puede tomar con la cámara o elegir desde la galería, con vista previa y opción de quitarla. | Alta |
 | RF13 | El panel principal muestra los kWh producidos en el mes, el ahorro estimado en CLP y los días desde la última limpieza. | Alta |
-| RF14 | El panel principal muestra el nivel de luz actual (lux) leído del sensor del teléfono, con un indicador animado y un mensaje (baja, media o alta producción esperada). Si el teléfono no tiene sensor, se informa sin fallar. | Media |
+| RF14 | El panel principal muestra el rendimiento del mes (kWh producidos contra lo esperado según la potencia) con un color que cambia según el nivel: sin datos, bajo, normal o excelente. | Media |
 | RF15 | La app navega entre Login, Registro, Panel, Instalación, Producción, Nueva lectura, Mantenciones, Nueva mantención y Perfil, con barra inferior y botón de volver. | Alta |
 
 ## 5. Requisitos no funcionales
@@ -65,7 +66,7 @@ Desarrollar una app móvil que permita al dueño de una instalación solar domé
 |---|---|---|
 | RNF01 | Usabilidad | La interfaz usa Material 3 (TopAppBar, NavigationBar, Card, OutlinedTextField, FAB), con jerarquía tipográfica y una paleta de colores consistente (amarillo solar y azul). |
 | RNF02 | Usabilidad | Todo error se comunica en pantalla, nunca solo por consola; cada campo indica su estado con ícono y texto. |
-| RNF03 | Usabilidad | Las animaciones (aparición de errores, vista previa de foto, indicador de luz, transiciones de pantalla) duran entre 200 y 600 ms y aportan retroalimentación. |
+| RNF03 | Usabilidad | Las animaciones (aparición de errores, vista previa de foto, color del rendimiento, transiciones de pantalla) duran entre 200 y 600 ms y aportan retroalimentación. |
 | RNF04 | Arquitectura | El proyecto sigue MVVM: pantallas Compose (View), ViewModels con UiState expuesto por StateFlow, y Repository + Room como modelo de datos. |
 | RNF05 | Mantenibilidad | Las validaciones están en `util/Validaciones.kt` y en los ViewModels, no dentro de los Composables. |
 | RNF06 | Mantenibilidad | El código se organiza en paquetes por responsabilidad: `model`, `data`, `ui/<pantalla>`, `util`. |
@@ -73,7 +74,7 @@ Desarrollar una app móvil que permita al dueño de una instalación solar domé
 | RNF08 | Rendimiento | La UI no se bloquea al guardar o leer datos; las listas usan `LazyColumn`. |
 | RNF09 | Robustez | El estado de los formularios sobrevive a la rotación de pantalla (ViewModel / `rememberSaveable`). |
 | RNF10 | Seguridad | La app pide solo los permisos necesarios (ubicación) y en el momento en que se usan. La galería usa Photo Picker, sin permiso de almacenamiento, y la cámara usa FileProvider, sin exponer rutas de archivos. |
-| RNF11 | Seguridad | El sensor de luz se registra solo mientras la pantalla está visible y se libera al salir. |
+| RNF11 | Seguridad | La ubicación se pide una sola vez, cuando el usuario presiona el botón, y no se sigue en segundo plano. |
 | RNF12 | Compatibilidad | Funciona desde Android 7.0 (API 24) hasta Android 16 (API 36), probado en el emulador Pixel 8 API 36. |
 | RNF13 | Portabilidad | Compila en los computadores del instituto con las mismas versiones de Android Studio, Gradle y librerías usadas en clases. |
 | RNF14 | Control de versiones | El código está en un repositorio público de GitHub con commits frecuentes y mensajes técnicos. |
@@ -97,4 +98,4 @@ Tomadas del proyecto del profesor `primer-mvvm-actividad03` (`gradle/libs.versio
 | compileSdk / targetSdk / minSdk | 36 / 36 / 24 |
 | Emulador | Pixel 8, API 36 (Android 16) |
 
-No se necesita ningún plugin ni extensión de Android Studio: todas las librerías se descargan con Gradle (*Sync Now*). La ubicación se obtiene con `LocationManager` y el sensor de luz con `SensorManager`, ambos del propio Android, para no agregar dependencias nuevas.
+No se necesita ningún plugin ni extensión de Android Studio: todas las librerías se descargan con Gradle (*Sync Now*). La ubicación se obtiene con `LocationManager`, del propio Android, para no agregar dependencias nuevas.

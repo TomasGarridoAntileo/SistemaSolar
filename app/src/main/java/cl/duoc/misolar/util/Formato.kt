@@ -41,3 +41,8 @@ fun formatearKwh(kwh: Double): String {
 fun formatearPesos(monto: Int): String {
     return "$" + String.format(Locale.forLanguageTag("es-CL"), "%,d", monto)
 }
+
+// Ej: "-33.4489, -70.6693"
+fun formatearCoordenadas(latitud: Double, longitud: Double): String {
+    return String.format(Locale.US, "%.4f, %.4f", latitud, longitud)
+}

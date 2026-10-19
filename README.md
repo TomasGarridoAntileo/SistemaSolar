@@ -15,13 +15,12 @@ Proyecto de la **Evaluación Parcial 2** de *DSY1105 Desarrollo de Aplicaciones 
 | Login y registro con validaciones por campo (ícono y mensaje) | ✅ |
 | Persistencia local con Room (usuarios y sesión) | ✅ |
 | Registro y edición de la instalación (paneles, potencia, fecha, precio kWh) | ✅ |
-| Ubicación GPS de la instalación | ⏳ |
+| Ubicación GPS de la instalación, con permiso pedido al momento de usarla | ✅ |
 | Lecturas de producción diaria: lista, nueva lectura validada y eliminar con confirmación | ✅ |
 | Foto del inversor en la lectura (cámara con FileProvider / galería con Photo Picker, se muestra con Coil) | ✅ |
 | Historial de mantenciones (limpieza, revisión, reparación) con foto obligatoria y eliminar con confirmación | ✅ |
 | Panel con kWh del mes y ahorro estimado | ✅ |
 | Animaciones: Crossfade en la instalación, color del rendimiento con animateColorAsState y detalles con AnimatedVisibility | ✅ |
-| Sensor de luz en el Panel | ⏳ |
 
 Los requisitos completos están en [docs/requisitos-alcance.md](docs/requisitos-alcance.md).
 

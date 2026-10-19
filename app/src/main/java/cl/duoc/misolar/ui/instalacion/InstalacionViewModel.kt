@@ -7,6 +7,7 @@ import cl.duoc.misolar.data.AppDatabase
 import cl.duoc.misolar.data.InstalacionRepository
 import cl.duoc.misolar.data.UsuarioRepository
 import cl.duoc.misolar.model.Instalacion
+import cl.duoc.misolar.util.pedirUbicacion
 import cl.duoc.misolar.util.validarCantidadPaneles
 import cl.duoc.misolar.util.validarFechaPasada
 import cl.duoc.misolar.util.validarNombreInstalacion
@@ -44,6 +45,8 @@ class InstalacionViewModel(
                     potenciaPanel = instalacion.potenciaPanelW.toString(),
                     fechaInstalacion = instalacion.fechaInstalacion,
                     precioKwh = instalacion.precioKwh.toString(),
+                    latitud = instalacion.latitud,
+                    longitud = instalacion.longitud,
                     esEdicion = true
                 )
             }
@@ -95,6 +98,33 @@ class InstalacionViewModel(
         }
     }
 
+    // Se llama despues de que el usuario acepta el permiso
+    fun buscarUbicacion() {
+        _uiState.update { it.copy(buscandoUbicacion = true, mensajeUbicacion = null) }
+        pedirUbicacion(getApplication<Application>()) { ubicacion ->
+            _uiState.update {
+                if (ubicacion == null) {
+                    it.copy(
+                        buscandoUbicacion = false,
+                        mensajeUbicacion = "No se pudo obtener la ubicación. Revisa que el GPS esté encendido."
+                    )
+                } else {
+                    it.copy(
+                        buscandoUbicacion = false,
+                        latitud = ubicacion.latitude,
+                        longitud = ubicacion.longitude
+                    )
+                }
+            }
+        }
+    }
+
+    fun permisoUbicacionRechazado() {
+        _uiState.update {
+            it.copy(mensajeUbicacion = "Sin el permiso no podemos guardar dónde están tus paneles. Puedes darlo después en Ajustes, o guardar sin ubicación.")
+        }
+    }
+
     fun guardar() {
         val estado = _uiState.value
         val errorNombre = validarNombreInstalacion(estado.nombre)
@@ -127,7 +157,9 @@ class InstalacionViewModel(
                     cantidadPaneles = estado.cantidadPaneles.trim().toInt(),
                     potenciaPanelW = estado.potenciaPanel.trim().toInt(),
                     fechaInstalacion = estado.fechaInstalacion.trim(),
-                    precioKwh = estado.precioKwh.trim().toInt()
+                    precioKwh = estado.precioKwh.trim().toInt(),
+                    latitud = estado.latitud,
+                    longitud = estado.longitud
                 )
             )
             _uiState.update { it.copy(guardando = false, guardadoExitoso = true) }
