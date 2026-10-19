@@ -1,6 +1,7 @@
 package cl.duoc.misolar.ui.produccion
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import cl.duoc.misolar.data.AppDatabase
@@ -10,16 +11,20 @@ import cl.duoc.misolar.data.UsuarioRepository
 import cl.duoc.misolar.model.Instalacion
 import cl.duoc.misolar.model.Lectura
 import cl.duoc.misolar.util.HORAS_SOL_MAXIMAS
+import cl.duoc.misolar.util.borrarFoto
+import cl.duoc.misolar.util.copiarAFotos
 import cl.duoc.misolar.util.convertirKwh
 import cl.duoc.misolar.util.fechaAIso
 import cl.duoc.misolar.util.validarFechaLectura
 import cl.duoc.misolar.util.validarKwh
 import cl.duoc.misolar.util.validarNota
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val SIN_INSTALACION = "Primero registra tu instalación en el Panel"
 
@@ -87,6 +92,29 @@ class NuevaLecturaViewModel(
         }
     }
 
+    fun ponerFotoCamara(uri: Uri) {
+        reemplazarFoto(uri.toString())
+    }
+
+    // Copiar la imagen puede demorar, por eso va en Dispatchers.IO
+    fun ponerFotoGaleria(uri: Uri) {
+        viewModelScope.launch {
+            val copia = withContext(Dispatchers.IO) { copiarAFotos(getApplication<Application>(), uri) }
+            if (copia != null) reemplazarFoto(copia.toString())
+        }
+    }
+
+    fun quitarFoto() {
+        borrarFoto(getApplication<Application>(), _uiState.value.fotoUri)
+        _uiState.update { it.copy(fotoUri = null) }
+    }
+
+    // Si ya habia una foto se borra la anterior
+    private fun reemplazarFoto(nueva: String) {
+        borrarFoto(getApplication<Application>(), _uiState.value.fotoUri)
+        _uiState.update { it.copy(fotoUri = nueva) }
+    }
+
     fun guardar() {
         val estado = _uiState.value
         val id = usuarioId
@@ -124,7 +152,8 @@ class NuevaLecturaViewModel(
                     usuarioId = id,
                     fecha = fechaIso,
                     kwh = kwh,
-                    nota = estado.nota.trim()
+                    nota = estado.nota.trim(),
+                    fotoUri = estado.fotoUri
                 )
             )
             _uiState.update { it.copy(guardando = false, guardadoExitoso = true) }

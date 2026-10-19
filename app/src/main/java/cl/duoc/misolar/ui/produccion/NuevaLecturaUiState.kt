@@ -7,6 +7,7 @@ data class NuevaLecturaUiState(
     val fecha: String = hoyTexto(),
     val kwh: String = "",
     val nota: String = "",
+    val fotoUri: String? = null,
 
     val errorFecha: String? = null,
     val errorKwh: String? = null,

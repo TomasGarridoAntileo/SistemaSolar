@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duoc.misolar.ui.componentes.BarraSuperior
 import cl.duoc.misolar.ui.componentes.CampoValidado
+import cl.duoc.misolar.ui.componentes.SelectorFoto
 import cl.duoc.misolar.util.LARGO_MAXIMO_NOTA
 import cl.duoc.misolar.util.formatearKwh
 
@@ -99,6 +100,18 @@ fun NuevaLecturaScreen(
             Text(
                 "${uiState.nota.length}/$LARGO_MAXIMO_NOTA",
                 style = MaterialTheme.typography.bodySmall
+            )
+
+            Text(
+                "Foto del inversor (opcional)",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            SelectorFoto(
+                fotoUri = uiState.fotoUri,
+                onFotoCamara = { viewModel.ponerFotoCamara(it) },
+                onFotoGaleria = { viewModel.ponerFotoGaleria(it) },
+                onQuitarFoto = { viewModel.quitarFoto() }
             )
 
             Button(

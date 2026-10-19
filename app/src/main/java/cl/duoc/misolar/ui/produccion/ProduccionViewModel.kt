@@ -7,6 +7,7 @@ import cl.duoc.misolar.data.AppDatabase
 import cl.duoc.misolar.data.LecturaRepository
 import cl.duoc.misolar.data.UsuarioRepository
 import cl.duoc.misolar.model.Lectura
+import cl.duoc.misolar.util.borrarFoto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -61,6 +62,7 @@ class ProduccionViewModel(
         val lectura = _lecturaAEliminar.value ?: return
         viewModelScope.launch {
             lecturaRepository.eliminar(lectura)
+            borrarFoto(getApplication<Application>(), lectura.fotoUri)
             _lecturaAEliminar.value = null
         }
     }

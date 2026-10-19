@@ -17,7 +17,7 @@ Proyecto de la **Evaluación Parcial 2** de *DSY1105 Desarrollo de Aplicaciones 
 | Registro y edición de la instalación (paneles, potencia, fecha, precio kWh) | ✅ |
 | Ubicación GPS de la instalación | ⏳ |
 | Lecturas de producción diaria: lista, nueva lectura validada y eliminar con confirmación | ✅ |
-| Foto del inversor en la lectura (cámara / galería) | ⏳ |
+| Foto del inversor en la lectura (cámara con FileProvider / galería con Photo Picker, se muestra con Coil) | ✅ |
 | Historial de mantenciones con foto | ⏳ |
 | Panel con kWh del mes y ahorro estimado | ✅ |
 | Sensor de luz en el Panel | ⏳ |

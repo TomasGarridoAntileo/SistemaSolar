@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Clase 06: carpeta que el FileProvider puede compartir con la camara -->
+<!-- Se usa files-path en vez de cache-path porque la foto queda guardada en Room -->
+<paths>
+    <files-path
+        name="fotos"
+        path="fotos/" />
+</paths>
