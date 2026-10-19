@@ -9,6 +9,10 @@ class MantencionRepository(private val mantencionDao: MantencionDao) {
         return mantencionDao.observarPorUsuario(usuarioId)
     }
 
+    fun observarUltimaFecha(usuarioId: Int, tipo: String): Flow<String?> {
+        return mantencionDao.observarUltimaFecha(usuarioId, tipo)
+    }
+
     suspend fun guardar(mantencion: Mantencion) {
         mantencionDao.insertar(mantencion)
     }

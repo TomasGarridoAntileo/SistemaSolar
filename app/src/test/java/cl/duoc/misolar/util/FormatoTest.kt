@@ -35,4 +35,11 @@ class FormatoTest {
     fun coordenadasConCuatroDecimales() {
         assertEquals("-33.4489, -70.6693", formatearCoordenadas(-33.44889, -70.66926))
     }
+
+    @Test
+    fun diasDesdeLaUltimaLimpieza() {
+        val hoy = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).parse("2026-10-19")!!
+        assertEquals(9, diasDesde("2026-10-10", hoy))
+        assertEquals(null, diasDesde("fecha mala", hoy))
+    }
 }

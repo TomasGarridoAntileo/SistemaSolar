@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.SolarPower
@@ -34,9 +36,11 @@ import cl.duoc.misolar.model.Instalacion
 import cl.duoc.misolar.ui.componentes.BarraInferior
 import cl.duoc.misolar.ui.componentes.BarraSuperior
 import cl.duoc.misolar.ui.navegacion.Rutas
+import cl.duoc.misolar.util.DIAS_ENTRE_LIMPIEZAS
 import cl.duoc.misolar.util.NivelRendimiento
 import cl.duoc.misolar.util.calcularAhorro
 import cl.duoc.misolar.util.calcularRendimiento
+import cl.duoc.misolar.util.diasDesde
 import cl.duoc.misolar.util.formatearCoordenadas
 import cl.duoc.misolar.util.formatearKwh
 import cl.duoc.misolar.util.formatearPesos
@@ -52,6 +56,7 @@ fun PanelScreen(
     val instalacion by viewModel.instalacion.collectAsStateWithLifecycle()
     val kwhDelMes by viewModel.kwhDelMes.collectAsStateWithLifecycle()
     val diasDelMes by viewModel.diasDelMes.collectAsStateWithLifecycle()
+    val ultimaLimpieza by viewModel.ultimaLimpieza.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { BarraSuperior(titulo = "Mi panel") },
@@ -61,6 +66,7 @@ fun PanelScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -74,6 +80,8 @@ fun PanelScreen(
             }
 
             ResumenMes(kwhDelMes, diasDelMes, instalacion)
+
+            TarjetaLimpieza(ultimaLimpieza)
         }
     }
 }
@@ -176,6 +184,32 @@ private fun ResumenMes(kwhDelMes: Double, diasDelMes: Int, instalacion: Instalac
 
             if (instalacion == null) {
                 Text("Registra tu instalación para calcular el ahorro.")
+            }
+        }
+    }
+}
+
+@Composable
+private fun TarjetaLimpieza(ultimaLimpieza: String?) {
+    val dias = ultimaLimpieza?.let { diasDesde(it) }
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text("Limpieza de paneles", style = MaterialTheme.typography.titleLarge)
+            when {
+                dias == null -> Text("Aún no registras limpiezas en Mantenciones.")
+                dias == 0 -> Text("Limpiaste tus paneles hoy.")
+                dias == 1 -> Text("Última limpieza hace 1 día.")
+                else -> Text("Última limpieza hace $dias días.")
+            }
+            // Aviso cuando pasaron mas de 3 meses
+            if (dias != null && dias > DIAS_ENTRE_LIMPIEZAS) {
+                Text(
+                    "Te recomendamos limpiarlos: el polvo baja la producción.",
+                    color = MaterialTheme.colorScheme.error
+                )
             }
         }
     }

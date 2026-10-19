@@ -5,7 +5,15 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,8 +31,18 @@ import cl.duoc.misolar.ui.registro.RegistroScreen
 private const val DURACION_TRANSICION = 300
 
 @Composable
-fun Navegacion() {
+fun Navegacion(inicioViewModel: InicioViewModel = viewModel()) {
+    val rutaInicial by inicioViewModel.rutaInicial.collectAsStateWithLifecycle()
     val navController = rememberNavController()
+
+    // Mientras se revisa la sesion se muestra un indicador de carga
+    val inicio = rutaInicial
+    if (inicio == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     // Cambia de pestana sin apilar pantallas
     val irAPestana: (String) -> Unit = { ruta ->
@@ -38,7 +56,7 @@ fun Navegacion() {
 
     NavHost(
         navController = navController,
-        startDestination = Rutas.LOGIN,
+        startDestination = inicio,
         // Animacion al cambiar de pantalla
         enterTransition = {
             slideInHorizontally(tween(DURACION_TRANSICION)) { it / 4 } + fadeIn(tween(DURACION_TRANSICION))

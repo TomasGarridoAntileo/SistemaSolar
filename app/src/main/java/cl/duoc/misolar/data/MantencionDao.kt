@@ -16,6 +16,10 @@ interface MantencionDao {
     @Delete
     suspend fun eliminar(mantencion: Mantencion)
 
+    // Fecha de la ultima mantencion de un tipo, null si no hay
+    @Query("SELECT MAX(fecha) FROM mantenciones WHERE usuarioId = :usuarioId AND tipo = :tipo")
+    fun observarUltimaFecha(usuarioId: Int, tipo: String): Flow<String?>
+
     // La mas reciente primero
     @Query("SELECT * FROM mantenciones WHERE usuarioId = :usuarioId ORDER BY fecha DESC, id DESC")
     fun observarPorUsuario(usuarioId: Int): Flow<List<Mantencion>>

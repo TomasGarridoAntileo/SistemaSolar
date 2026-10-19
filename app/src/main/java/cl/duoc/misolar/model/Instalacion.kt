@@ -15,7 +15,7 @@ data class Instalacion(
     // Formato dd/MM/yyyy
     val fechaInstalacion: String,
     val precioKwh: Int,
-    // Se llenan en la etapa de GPS
+    // Ubicacion GPS, opcional
     val latitud: Double? = null,
     val longitud: Double? = null
 ) {

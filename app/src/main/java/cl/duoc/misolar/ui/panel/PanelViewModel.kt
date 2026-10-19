@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import cl.duoc.misolar.data.AppDatabase
 import cl.duoc.misolar.data.InstalacionRepository
 import cl.duoc.misolar.data.LecturaRepository
+import cl.duoc.misolar.data.MantencionRepository
 import cl.duoc.misolar.data.UsuarioRepository
 import cl.duoc.misolar.model.Instalacion
+import cl.duoc.misolar.model.TipoMantencion
 import cl.duoc.misolar.util.mesActualIso
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,7 @@ class PanelViewModel(
     private val usuarioRepository = UsuarioRepository(database.usuarioDao(), database.sesionDao())
     private val instalacionRepository = InstalacionRepository(database.instalacionDao())
     private val lecturaRepository = LecturaRepository(database.lecturaDao())
+    private val mantencionRepository = MantencionRepository(database.mantencionDao())
 
     private val usuarioId = MutableStateFlow<Int?>(null)
 
@@ -63,6 +66,19 @@ class PanelViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = 0
+        )
+
+    // Fecha de la ultima limpieza (yyyy-MM-dd), null si no hay
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val ultimaLimpieza: StateFlow<String?> = usuarioId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(null)
+            else mantencionRepository.observarUltimaFecha(id, TipoMantencion.LIMPIEZA.name)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
         )
 
     init {

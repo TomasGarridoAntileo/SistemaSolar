@@ -1,5 +1,9 @@
 package cl.duoc.misolar.util
 
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
 
 // Horas de sol pico promedio al dia en Chile central
@@ -26,4 +30,20 @@ fun nivelRendimiento(porcentaje: Int?): NivelRendimiento {
         porcentaje >= 50 -> NivelRendimiento.NORMAL
         else -> NivelRendimiento.BAJO
     }
+}
+
+// Se recomienda limpiar los paneles cada 3 meses
+const val DIAS_ENTRE_LIMPIEZAS = 90
+
+// Dias entre una fecha yyyy-MM-dd y hoy
+fun diasDesde(fechaIso: String, hoy: Date = Date()): Int? {
+    val formato = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    formato.isLenient = false
+    val fecha = try {
+        formato.parse(fechaIso)
+    } catch (e: ParseException) {
+        null
+    } ?: return null
+    val milisegundosPorDia = 24 * 60 * 60 * 1000L
+    return ((hoy.time - fecha.time) / milisegundosPorDia).toInt()
 }
