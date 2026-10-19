@@ -156,3 +156,27 @@ fun validarFechaLectura(texto: String, fechaInstalacion: String, hoy: Date = Dat
 fun validarNota(nota: String): String? {
     return if (nota.trim().length > LARGO_MAXIMO_NOTA) "Máximo $LARGO_MAXIMO_NOTA caracteres" else null
 }
+
+// Formulario de mantencion
+
+const val LARGO_MINIMO_DESCRIPCION = 10
+const val LARGO_MAXIMO_DESCRIPCION = 200
+
+fun validarTipoMantencion(tipo: String?): String? {
+    return if (tipo == null) "Elige el tipo de mantención" else null
+}
+
+fun validarDescripcion(texto: String): String? {
+    val largo = texto.trim().length
+    return when {
+        texto.isBlank() -> "La descripción es obligatoria"
+        largo < LARGO_MINIMO_DESCRIPCION -> "Debe tener al menos $LARGO_MINIMO_DESCRIPCION caracteres"
+        largo > LARGO_MAXIMO_DESCRIPCION -> "Máximo $LARGO_MAXIMO_DESCRIPCION caracteres"
+        else -> null
+    }
+}
+
+// En mantenciones la foto es obligatoria como evidencia
+fun validarFoto(fotoUri: String?): String? {
+    return if (fotoUri == null) "Agrega una foto como evidencia" else null
+}

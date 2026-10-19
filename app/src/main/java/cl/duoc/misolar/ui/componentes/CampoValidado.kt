@@ -34,7 +34,9 @@ fun CampoValidado(
     error: String?,
     modifier: Modifier = Modifier,
     esPassword: Boolean = false,
-    tipoTeclado: KeyboardType = KeyboardType.Text
+    tipoTeclado: KeyboardType = KeyboardType.Text,
+    // Mas de 1 para textos largos
+    lineasMaximas: Int = 1
 ) {
     var mostrarPassword by rememberSaveable { mutableStateOf(false) }
 
@@ -42,7 +44,8 @@ fun CampoValidado(
         value = valor,
         onValueChange = onCambio,
         label = { Text(etiqueta) },
-        singleLine = true,
+        singleLine = lineasMaximas == 1,
+        maxLines = lineasMaximas,
         leadingIcon = { Icon(icono, contentDescription = null) },
         trailingIcon = {
             Row {

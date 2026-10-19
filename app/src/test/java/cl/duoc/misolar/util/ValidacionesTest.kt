@@ -134,4 +134,24 @@ class ValidacionesTest {
         assertNull(validarNota(""))
         assertNotNull(validarNota("a".repeat(101)))
     }
+
+    // Mantencion
+
+    @Test
+    fun tipoSinElegirTieneError() {
+        assertEquals("Elige el tipo de mantención", validarTipoMantencion(null))
+        assertNull(validarTipoMantencion("LIMPIEZA"))
+    }
+
+    @Test
+    fun descripcionCortaTieneError() {
+        assertEquals("Debe tener al menos 10 caracteres", validarDescripcion("Limpie"))
+        assertNull(validarDescripcion("Limpieza con agua y paño"))
+    }
+
+    @Test
+    fun mantencionSinFotoTieneError() {
+        assertNotNull(validarFoto(null))
+        assertNull(validarFoto("content://foto"))
+    }
 }
